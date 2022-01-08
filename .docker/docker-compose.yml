@@ -1,0 +1,34 @@
+version: '3.8'
+
+
+services:
+    django:
+        build:
+            context: ../
+            dockerfile: .docker/django/Dockerfile
+        ports:
+            - "8000:8000"
+        volumes:
+            - ../:/webapp/
+        
+        depends_on:
+            - db
+
+    
+    db:
+        image: mariadb:10.5.8
+        restart: on-failure
+        volumes: 
+            - ./mariadb/charset.cnf:/etc/mysql/conf.d/charset.cnf
+            - /tmp:/var/lib
+        ports:
+            - "3306:3306"
+        domainname: mariadb
+        hostname: mariadb
+        env_file: 
+            - ./.env
+    
+
+
+    
+

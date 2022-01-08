@@ -11,6 +11,10 @@ ENV PYTHONUNBUFFERED 1
 # install requirements for compile mysqlclient module
 #RUN apt-get_install.sh python3-dev default-libmysqlclient-dev build-essential 
 
+# create the virtual environment for our project
+#ENV VIRTUAL_ENV=/venv
+#ENV PATH="$VIRTUAL_ENV/bin:$PATH:/docker-bin"
+
 # update pip inside of the virtual environment
 RUN pip install --upgrade pip
 
@@ -19,7 +23,7 @@ WORKDIR /webapp
 COPY requirements.txt /webapp/requirements.txt
 
 # actually install the requirements into the virtual environment
-RUN pip install --no-cache-dir -r /requirements.txt 
+RUN pip install --no-cache-dir -r requirements.txt 
 
 COPY . /webapp
 
