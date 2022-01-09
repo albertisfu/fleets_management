@@ -72,6 +72,21 @@ class TestVehicle:
         assert last_distance == 0, \
             'Check if last distance is 0 if vehicle does not have trips'
 
+    def test_get_total_distance(self, vehicle: Vehicle,
+                                empty_vehicle: Vehicle):
+        """
+        Test test_get_total_distance function, it has to return total
+        distance from a vehicle from history travel
+        """
+
+        total_distance = vehicle.get_total_distance()
+        assert total_distance == 50, \
+            'Check if total distance match'
+
+        total_distance = empty_vehicle.get_total_distance()
+        assert total_distance == 0, \
+            'Check if total distance is 0 if vehicle does not have trips'
+
 
 class TestVehicleHistory:
     def test_model(self):

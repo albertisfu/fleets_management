@@ -1,5 +1,6 @@
 from django.db import models
 # Create your models here.
+from django.db.models import Sum
 
 
 class Vehicle(models.Model):
@@ -40,6 +41,18 @@ class Vehicle(models.Model):
         history_travel = self.vehiclehistory_set.all().order_by('-add_date')
         if history_travel.count() > 0:
             return history_travel[0].distance_traveled
+        else:
+            return 0
+
+    def get_total_distance(self):
+        """
+        Get total vehicle distance,
+        :return: decimal (distance)
+        """
+        history_travel = self.vehiclehistory_set.all()
+        if history_travel.count() > 0:
+            total_distance = history_travel.aggregate(Sum('distance_traveled'))
+            return total_distance['distance_traveled__sum']
         else:
             return 0
 
