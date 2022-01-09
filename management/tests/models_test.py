@@ -16,10 +16,10 @@ def vehicle(db) -> Vehicle:
                 distance_traveled=0, fuel_consumed=0)
     mixer.blend(VehicleHistory, vehicle=vehicle,
                 current_location=city_b,
-                distance_traveled=20, fuel_consumed=10)
+                distance_traveled=20, fuel_consumed=2.5)
     mixer.blend(VehicleHistory, vehicle=vehicle,
                 current_location=city_c,
-                distance_traveled=30, fuel_consumed=25)
+                distance_traveled=30, fuel_consumed=2)
     return vehicle
 
 
@@ -86,6 +86,17 @@ class TestVehicle:
         total_distance = empty_vehicle.get_total_distance()
         assert total_distance == 0, \
             'Check if total distance is 0 if vehicle does not have trips'
+
+    def test_get_fuel_efficency(self, vehicle: Vehicle,
+                                empty_vehicle: Vehicle):
+
+        fuel_efficency = vehicle.get_fuel_efficency()
+        assert fuel_efficency == 15, \
+            'Check if fuel effiency match'
+
+        fuel_efficency = empty_vehicle.get_fuel_efficency()
+        assert fuel_efficency == 0, \
+            'Check if fuel effiency is 0 if vehicle does not have trips'
 
 
 class TestVehicleHistory:

@@ -56,6 +56,20 @@ class Vehicle(models.Model):
         else:
             return 0
 
+    def get_fuel_efficency(self):
+        """
+        Get last trip fuel efficency,
+        :return: decimal (fuel effiency, km/lt)
+        """
+        history_travel = self.vehiclehistory_set.all().order_by('-add_date')
+        if history_travel.count() > 0:
+            distance = history_travel[0].distance_traveled
+            fuel_consumed = history_travel[0].fuel_consumed
+            fuel_effiency = distance/fuel_consumed
+            return fuel_effiency
+        else:
+            return 0
+
     def __str__(self):
         return str(self.vehicle_id)
 
