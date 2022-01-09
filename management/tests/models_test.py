@@ -6,7 +6,7 @@ pytestmark = pytest.mark.django_db
 
 
 @pytest.fixture
-def instance_vehicle(db) -> Vehicle:
+def vehicle(db) -> Vehicle:
     city_a = 0
     city_b = 1
     city_c = 2
@@ -23,28 +23,54 @@ def instance_vehicle(db) -> Vehicle:
     return vehicle
 
 
+@pytest.fixture
+def empty_vehicle(db) -> Vehicle:
+    vehicle = mixer.blend(Vehicle)
+    return vehicle
+
+
 class TestVehicle:
-    def test_model(self):
+    def test_model(self, empty_vehicle: Vehicle):
         """
         Test to check if a vehicle instance is properly created.
         """
-        vehicle = mixer.blend(Vehicle)
-        assert vehicle.pk == 1, 'Create a Vehicle instance'
+        assert empty_vehicle.pk == 1, 'Create a Vehicle instance'
 
-    def test_get_vehicle_travel_history(self, instance_vehicle: Vehicle):
+    def test_get_vehicle_history(self, vehicle: Vehicle,
+                                 empty_vehicle: Vehicle):
         """
-        Test get_vehicle_travel_history function,
+        Test get_vehicle_history function
         it has to match with 3 instances created in fixtures
         """
-        history = instance_vehicle.get_vehicle_travel_history()
-        # print('history cities', history)
-        # print('history cities', [x.current_location for x in history])
-        assert history.count() == 3, 'Check if it return 3 instances created'
+        history = vehicle.get_vehicle_history()
+        assert history.count() == 3, 'Check if it returns 3 instances created'
 
-    def test_get_current_location(self, instance_vehicle: Vehicle):
-        current_location = instance_vehicle.get_current_location()
+        history = empty_vehicle.get_vehicle_history()
+        assert history.count() == 0, 'Check if it returns'
+
+    def test_get_current_location(self, vehicle: Vehicle,
+                                  empty_vehicle: Vehicle):
+        current_location = vehicle.get_current_location()
         assert current_location == 'city_c', \
             'Check if current location match with latest history created'
+
+        current_location = empty_vehicle.get_current_location()
+        assert current_location == '', \
+            'Check if current location is blank if vehicle does not have trips'
+
+    def test_get_last_trip_distance(self, vehicle: Vehicle,
+                                    empty_vehicle: Vehicle):
+        """
+        Test get_last_trip_distance function, it has to return last trip
+        distance of a vehicle
+        """
+        last_distance = vehicle.get_last_trip_distance()
+        assert last_distance == 30, \
+            'Check if last distance match with last trip'
+
+        last_distance = empty_vehicle.get_last_trip_distance()
+        assert last_distance == 0, \
+            'Check if last distance is 0 if vehicle does not have trips'
 
 
 class TestVehicleHistory:
