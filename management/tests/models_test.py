@@ -89,12 +89,27 @@ class TestVehicle:
 
     def test_get_fuel_efficency(self, vehicle: Vehicle,
                                 empty_vehicle: Vehicle):
-
+        """
+        Test get_fuel_efficency it has to return trip fuel effiency km/lt
+        """
         fuel_efficency = vehicle.get_fuel_efficency()
         assert fuel_efficency == 15, \
             'Check if fuel effiency match'
 
         fuel_efficency = empty_vehicle.get_fuel_efficency()
+        assert fuel_efficency == 0, \
+            'Check if fuel effiency is 0 if vehicle does not have trips'
+
+    def test_get_fuel_total_efficency(self, vehicle: Vehicle,
+                                      empty_vehicle: Vehicle):
+        """
+        Test get_fuel_efficency it has to return total fuel effiency km/lt
+        """
+        fuel_efficency = vehicle.get_fuel_total_efficency()
+        assert float(fuel_efficency) == 11.11, \
+            'Check if fuel effiency match'
+
+        fuel_efficency = empty_vehicle.get_fuel_total_efficency()
         assert fuel_efficency == 0, \
             'Check if fuel effiency is 0 if vehicle does not have trips'
 

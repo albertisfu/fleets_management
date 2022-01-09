@@ -70,6 +70,20 @@ class Vehicle(models.Model):
         else:
             return 0
 
+    def get_fuel_total_efficency(self):
+        """
+        Get total vehicle fuel efficency,
+        :return: decimal (fuel effiency, km/lt)
+        """
+        total_distance = self.get_total_distance()
+        history_travel = self.vehiclehistory_set.all()
+        if history_travel.count() > 0:
+            total_fuel = history_travel.aggregate(Sum('fuel_consumed'))
+            fuel_consumed = total_fuel['fuel_consumed__sum']
+            return round(total_distance / fuel_consumed, 2)
+        else:
+            return 0
+
     def __str__(self):
         return str(self.vehicle_id)
 
