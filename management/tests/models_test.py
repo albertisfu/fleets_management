@@ -36,74 +36,74 @@ class TestVehicle:
         Test get_vehicle_history function
         it has to match with 3 instances created in fixtures
         """
-        history = vehicle.get_vehicle_history()
+        history = vehicle.get_vehicle_history
         assert history.count() == 3, 'Check if it returns 3 instances created'
 
-        history = empty_vehicle.get_vehicle_history()
+        history = empty_vehicle.get_vehicle_history
         assert history.count() == 0, 'Check if it returns'
 
-    def test_get_current_location(self, vehicle: Vehicle,
-                                  empty_vehicle: Vehicle):
-        current_location = vehicle.get_current_location()
+    def test_current_location(self, vehicle: Vehicle,
+                              empty_vehicle: Vehicle):
+        current_location = vehicle.current_location
         assert current_location == 'city_c', \
             'Check if current location match with latest history created'
 
-        current_location = empty_vehicle.get_current_location()
+        current_location = empty_vehicle.current_location
         assert current_location == '', \
             'Check if current location is blank if vehicle does not have trips'
 
-    def test_get_last_trip_distance(self, vehicle: Vehicle,
-                                    empty_vehicle: Vehicle):
+    def test_last_trip_distance(self, vehicle: Vehicle,
+                                empty_vehicle: Vehicle):
         """
-        Test get_last_trip_distance function, it has to return last trip
+        Test last_trip_distance function, it has to return last trip
         distance of a vehicle
         """
-        last_distance = vehicle.get_last_trip_distance()
+        last_distance = vehicle.last_trip_distance
         assert last_distance == 4, \
             'Check if last distance match with last trip'
 
-        last_distance = empty_vehicle.get_last_trip_distance()
+        last_distance = empty_vehicle.last_trip_distance
         assert last_distance == 0, \
             'Check if last distance is 0 if vehicle does not have trips'
 
-    def test_get_total_distance(self, vehicle: Vehicle,
-                                empty_vehicle: Vehicle):
+    def test_total_distance(self, vehicle: Vehicle,
+                            empty_vehicle: Vehicle):
         """
-        Test test_get_total_distance function, it has to return total
+        Test test_total_distance function, it has to return total
         distance from a vehicle from history travel
         """
 
-        total_distance = vehicle.get_total_distance()
+        total_distance = vehicle.total_distance
         assert total_distance == 5, \
             'Check if total distance match'
 
-        total_distance = empty_vehicle.get_total_distance()
+        total_distance = empty_vehicle.total_distance
         assert total_distance == 0, \
             'Check if total distance is 0 if vehicle does not have trips'
 
-    def test_get_fuel_efficency(self, vehicle: Vehicle,
-                                empty_vehicle: Vehicle):
+    def test_fuel_efficency(self, vehicle: Vehicle,
+                            empty_vehicle: Vehicle):
         """
-        Test get_fuel_efficency it has to return trip fuel effiency km/lt
+        Test fuel_efficency it has to return trip fuel effiency km/lt
         """
-        fuel_efficency = vehicle.get_fuel_efficency()
+        fuel_efficency = vehicle.fuel_efficency
         assert fuel_efficency == 10, \
             'Check if fuel effiency match'
 
-        fuel_efficency = empty_vehicle.get_fuel_efficency()
+        fuel_efficency = empty_vehicle.fuel_efficency
         assert fuel_efficency == 0, \
             'Check if fuel effiency is 0 if vehicle does not have trips'
 
-    def test_get_fuel_total_efficency(self, vehicle: Vehicle,
-                                      empty_vehicle: Vehicle):
+    def test_fuel_total_efficency(self, vehicle: Vehicle,
+                                  empty_vehicle: Vehicle):
         """
-        Test get_fuel_efficency it has to return total fuel effiency km/lt
+        Test fuel_efficency it has to return total fuel effiency km/lt
         """
-        fuel_efficency = vehicle.get_fuel_total_efficency()
+        fuel_efficency = vehicle.fuel_total_efficency
         assert float(fuel_efficency) == 10, \
             'Check if fuel effiency match'
 
-        fuel_efficency = empty_vehicle.get_fuel_total_efficency()
+        fuel_efficency = empty_vehicle.fuel_total_efficency
         assert fuel_efficency == 0, \
             'Check if fuel effiency is 0 if vehicle does not have trips'
 

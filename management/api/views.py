@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from management.models import Vehicle, VehicleHistory
 from management.api.serializers import VehicleSerializer, \
-     VehicleHistorySerializer
+     VehicleHistorySerializer, VehicleCustomSerializer
 
 
 class VehicleViewSet(viewsets.ViewSet):
@@ -16,7 +16,7 @@ class VehicleViewSet(viewsets.ViewSet):
 
     def list(self, request):
         vehicles = Vehicle.objects.all()
-        serializer = VehicleSerializer(vehicles, many=True)
+        serializer = VehicleCustomSerializer(vehicles, many=True)
         return Response(serializer.data)
 
     def create(self, request):

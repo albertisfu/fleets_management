@@ -1,6 +1,7 @@
 from django.db import models
 # Create your models here.
 from django.db.models import Sum
+import decimal
 
 
 class Vehicle(models.Model):
@@ -8,11 +9,10 @@ class Vehicle(models.Model):
     A model to hold vehicle information.
     """
     vehicle_id = models.IntegerField(verbose_name='Vehicle ID',)
-    fuel_level = models.DecimalField(verbose_name='Fuel Level', max_digits=6,
-                                     decimal_places=2, default=0)
     add_date = models.DateTimeField(verbose_name='Creation Date',
                                     auto_now_add=True)
 
+    @property
     def get_vehicle_history(self):
         """
         Get Vechicle Travel History
@@ -21,7 +21,8 @@ class Vehicle(models.Model):
         history_travel = self.vehiclehistory_set.all()
         return history_travel
 
-    def get_current_location(self):
+    @property
+    def current_location(self):
         """
         Get current vehicle location,
         latest vehicle history instance register for vehicle
@@ -33,7 +34,8 @@ class Vehicle(models.Model):
         else:
             return ''
 
-    def get_last_trip_distance(self):
+    @property
+    def last_trip_distance(self):
         """
         Get last vehicle trip distance,
         :return: decimal (distance)
@@ -44,7 +46,8 @@ class Vehicle(models.Model):
         else:
             return 0
 
-    def get_total_distance(self):
+    @property
+    def total_distance(self):
         """
         Get total vehicle distance,
         :return: decimal (distance)
@@ -56,7 +59,8 @@ class Vehicle(models.Model):
         else:
             return 0
 
-    def get_fuel_efficency(self):
+    @property
+    def fuel_efficency(self):
         """
         Get last trip fuel efficency,
         :return: decimal (fuel effiency, km/lt)
@@ -65,22 +69,33 @@ class Vehicle(models.Model):
         if history_travel.count() > 0:
             distance = history_travel[0].distance_traveled
             fuel_consumed = history_travel[0].fuel_consumed
-            fuel_effiency = distance/fuel_consumed
+
+            # handle zero division
+            try:
+                fuel_effiency = distance/fuel_consumed
+            except decimal.InvalidOperation:
+                fuel_effiency = 0
             return fuel_effiency
         else:
             return 0
 
-    def get_fuel_total_efficency(self):
+    @property
+    def fuel_total_efficency(self):
         """
         Get total vehicle fuel efficency,
         :return: decimal (fuel effiency, km/lt)
         """
-        total_distance = self.get_total_distance()
+        total_distance = self.total_distance
         history_travel = self.vehiclehistory_set.all()
         if history_travel.count() > 0:
             total_fuel = history_travel.aggregate(Sum('fuel_consumed'))
             fuel_consumed = total_fuel['fuel_consumed__sum']
-            return round(total_distance / fuel_consumed, 2)
+            try:
+                total_fuel_effiency = round(total_distance / fuel_consumed, 2)
+            except decimal.InvalidOperation:
+                total_fuel_effiency = 0
+
+            return total_fuel_effiency
         else:
             return 0
 
@@ -134,7 +149,7 @@ class VehicleHistory(models.Model):
             self.fuel_consumed = 0
         else:
             # get previous location
-            origin = self.vehicle.get_current_location()
+            origin = self.vehicle.current_location
             destine = self.current_location
             distance = distances[origin][destine]
             self.distance_traveled = distance

@@ -9,7 +9,7 @@ pytestmark = pytest.mark.django_db
 
 @pytest.fixture
 def empty_vehicle(db) -> Vehicle:
-    vehicle = mixer.blend(Vehicle, fuel_level='150.00')
+    vehicle = mixer.blend(Vehicle)
     return vehicle
 
 
@@ -28,7 +28,6 @@ class TestVehicleSerializer:
 
         test_json = {
             'vehicle_id': 2,
-            'fuel_level': '100.00',
         }
 
         serializer = VehicleSerializer(data=test_json)

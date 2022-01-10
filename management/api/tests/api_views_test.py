@@ -7,14 +7,36 @@ from django.contrib.auth.models import User
 import pytest
 import json
 from mixer.backend.django import mixer
-from management.models import Vehicle
+from management.models import Vehicle, VehicleHistory
 
 pytestmark = pytest.mark.django_db
 
 
 @pytest.fixture
 def empty_vehicle(db) -> Vehicle:
-    vehicle = mixer.blend(Vehicle, fuel_level='100.00')
+    vehicle = mixer.blend(Vehicle)
+    return vehicle
+
+
+@pytest.fixture
+def vehicle(db) -> Vehicle:
+    vehicle = mixer.blend(Vehicle)
+    mixer.blend(VehicleHistory, vehicle=vehicle,
+                current_location='city_a')
+    mixer.blend(VehicleHistory, vehicle=vehicle,
+                current_location='city_b')
+    mixer.blend(VehicleHistory, vehicle=vehicle,
+                current_location='city_c')
+    return vehicle
+
+
+@pytest.fixture
+def vehicle_zero(db) -> Vehicle:
+    vehicle = mixer.blend(Vehicle)
+    mixer.blend(VehicleHistory, vehicle=vehicle,
+                current_location='city_a')
+    mixer.blend(VehicleHistory, vehicle=vehicle,
+                current_location='city_a')
     return vehicle
 
 
@@ -42,7 +64,6 @@ class TestVehicleEndpoints:
         """
         test_json = {
             'vehicle_id': 2,
-            'fuel_level': '100.00',
         }
         response = api_client.post(
             self.endpoint,
@@ -53,19 +74,63 @@ class TestVehicleEndpoints:
         json_obj = json.loads(response.content)
         assert response.status_code == 201
         assert json_obj['vehicle_id'] == test_json['vehicle_id']
-        assert json_obj['fuel_level'] == test_json['fuel_level']
 
-    def test_list(self, api_client, empty_vehicle: Vehicle):
+    def test_list(self, api_client, vehicle: Vehicle):
         """
         Test list endpoint, create a vehicle and retrieve
         vehicles json list
         """
+
+        test_json = {
+            'id': vehicle.id,
+            'vehicle_id': vehicle.vehicle_id,
+            'current_location': vehicle.current_location,
+            'last_trip_distance': float(vehicle.last_trip_distance),
+            'total_distance': float(vehicle.total_distance),
+            'fuel_efficency': float(vehicle.fuel_efficency),
+            'fuel_total_efficency': float(vehicle.fuel_total_efficency),
+        }
+
         response = api_client.get(
             self.endpoint
         )
 
+        json_obj = json.loads(response.content)
+
         assert response.status_code == 200
-        assert len(json.loads(response.content)) == 1
+        assert len(json_obj) == 1
+        assert json_obj[0]['vehicle_id'] == test_json['vehicle_id']
+        assert json_obj[0]['fuel_total_efficency'] == \
+               test_json['fuel_total_efficency']
+
+    def test_list_zero(self, api_client, vehicle_zero: Vehicle):
+        """
+        Test list endpoint, create a vehicle and retrieve
+        vehicles json list, check if zero division on fuel effiency
+        works properly
+        """
+
+        test_json = {
+            'id': vehicle_zero.id,
+            'vehicle_id': vehicle_zero.vehicle_id,
+            'current_location': vehicle_zero.current_location,
+            'last_trip_distance': float(vehicle_zero.last_trip_distance),
+            'total_distance': float(vehicle_zero.total_distance),
+            'fuel_efficency': float(vehicle_zero.fuel_efficency),
+            'fuel_total_efficency': float(vehicle_zero.fuel_total_efficency),
+        }
+
+        response = api_client.get(
+            self.endpoint
+        )
+
+        json_obj = json.loads(response.content)
+
+        assert response.status_code == 200
+        assert len(json_obj) == 1
+        assert json_obj[0]['vehicle_id'] == test_json['vehicle_id']
+        assert json_obj[0]['fuel_total_efficency'] == \
+               test_json['fuel_total_efficency']
 
     def test_retrieve(self, api_client, empty_vehicle: Vehicle):
         """
@@ -76,7 +141,6 @@ class TestVehicleEndpoints:
         test_json = {
             'id': empty_vehicle.id,
             'vehicle_id': empty_vehicle.vehicle_id,
-            'fuel_level': str(empty_vehicle.fuel_level),
         }
 
         url = f'{self.endpoint}/{empty_vehicle.id}'
@@ -86,7 +150,6 @@ class TestVehicleEndpoints:
         assert response.status_code == 200
         assert json_obj['id'] == test_json['id']
         assert json_obj['vehicle_id'] == test_json['vehicle_id']
-        assert json_obj['fuel_level'] == test_json['fuel_level']
 
     def test_update(self, api_client, empty_vehicle: Vehicle):
         """
@@ -96,7 +159,6 @@ class TestVehicleEndpoints:
 
         test_json = {
             'vehicle_id': 2,
-            'fuel_level': '50.00',
         }
 
         url = f'{self.endpoint}/{empty_vehicle.id}'
@@ -110,7 +172,6 @@ class TestVehicleEndpoints:
         json_obj = json.loads(response.content)
         assert response.status_code == 202
         assert json_obj['vehicle_id'] == test_json['vehicle_id']
-        assert json_obj['fuel_level'] == test_json['fuel_level']
 
     def test_delete(self, api_client, empty_vehicle: Vehicle):
         """
