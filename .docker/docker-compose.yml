@@ -2,19 +2,7 @@ version: '3.8'
 
 
 services:
-    django:
-        build:
-            context: ../
-            dockerfile: .docker/django/Dockerfile
-        ports:
-            - "8000:8000"
-        volumes:
-            - ../:/webapp/
-        
-        depends_on:
-            - db
 
-    
     db:
         image: mariadb:10.5.8
         restart: on-failure
@@ -24,9 +12,29 @@ services:
         ports:
             - "3306:3306"
         domainname: mariadb
-        hostname: mariadb
+        hostname: db
         env_file: 
             - ./.env
+    django:
+        build:
+            context: ../
+            dockerfile: .docker/django/Dockerfile
+        ports:
+            - "8000:8000"
+        volumes:
+            - ../:/webapp/
+        
+        command: sh -c "sleep 5 &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+        depends_on:
+            - db
+        
+        
+        
+
+    
+    
     
 
 
