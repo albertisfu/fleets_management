@@ -7,7 +7,7 @@ pytestmark = pytest.mark.django_db
 
 @pytest.fixture
 def vehicle(db) -> Vehicle:
-    vehicle = mixer.blend(Vehicle)
+    vehicle = mixer.blend(Vehicle, vehicle_id=1)
     mixer.blend(VehicleHistory, vehicle=vehicle,
                 current_location='city_a')
     mixer.blend(VehicleHistory, vehicle=vehicle,
@@ -19,7 +19,7 @@ def vehicle(db) -> Vehicle:
 
 @pytest.fixture
 def empty_vehicle(db) -> Vehicle:
-    vehicle = mixer.blend(Vehicle)
+    vehicle = mixer.blend(Vehicle, vehicle_id=1)
     return vehicle
 
 
@@ -28,7 +28,7 @@ class TestVehicle:
         """
         Test to check if a vehicle instance is properly created.
         """
-        assert empty_vehicle.pk == 1, 'Create a Vehicle instance'
+        assert empty_vehicle.vehicle_id == 1, 'Create a Vehicle instance'
 
     def test_get_vehicle_history(self, vehicle: Vehicle,
                                  empty_vehicle: Vehicle):
@@ -113,11 +113,11 @@ class TestVehicleHistory:
         """
         Test to check if a vehicle history instance is properly created.
         """
-        vehicle = mixer.blend(Vehicle)
+        vehicle = mixer.blend(Vehicle, vehicle_id=1)
         history_vehicle = mixer.blend(VehicleHistory, vehicle=vehicle,
                                       current_location='city_a')
 
-        assert history_vehicle.vehicle.pk == 1, 'Check Vehicle relation'
+        assert history_vehicle.vehicle.vehicle_id == 1, 'Check Vehicle relation'
 
         assert history_vehicle.current_location == 'city_a' \
             and history_vehicle.distance_traveled == 0 \

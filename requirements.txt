@@ -2,18 +2,8 @@
 Django==4.0.1
 django-mysql==4.3.0
 mysqlclient==2.1.0
-
-# DRF
 djangorestframework==3.13.1
-
-# flake8-django to check for PEP8 compliance and Django compliance
 flake8-django==1.1.2
-
-# fixtures data generator
 mixer==7.2.0
-
-# pytest for django project
 pytest-django==4.5.2
-
-# coverage measures code coverage of Python programs
 pytest-cov==3.0.0
