@@ -1,6 +1,10 @@
 {% extends "base_user.html" %}
  {% load static %}
 {% block head_content %}
+
+<script src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyBRQglz4TEx4kM9F3sWLpgl1TfrRiBOQec"
+type="text/javascript"></script>
+
 <title>Dashboard</title>
 {% endblock%}
 
@@ -15,7 +19,7 @@
 
 <div class="row">
     <div class="col-lg-6">
-        f
+        <div class="demo-wrapper"><div id="layoutmap"></div></div>
     </div>
 <div class="col-lg-6">
   <div class="card">
@@ -85,5 +89,129 @@
 </div>
 </div>
 
+
+
+<script>
+    window.onload = function () { 
+    /**
+     * Initializes the map and calls the function that creates polylines.
+     */
+    var styles = [
+        {
+            featureType: 'water',
+            elementType: 'all',
+            stylers: [
+                { hue: '#ffffff' },
+                { saturation: -100 },
+                { lightness: 100 },
+                { visibility: 'on' }
+            ]
+        },{
+            featureType: 'landscape',
+            elementType: 'all',
+            stylers: [
+                { hue: '#E4E4E4' },
+                { saturation: -100 },
+                { lightness: 4 },
+                { visibility: 'on' }
+            ]
+        },{
+            featureType: 'poi',
+            elementType: 'all',
+            stylers: [
+                { hue: '#E4E4E4' },
+                { saturation: -100 },
+                { lightness: 52 },
+                { visibility: 'on' }
+            ]
+        },{
+            featureType: 'landscape.natural',
+            elementType: 'all',
+            stylers: [
+                { hue: '#E4E4E4' },
+                { saturation: -100 },
+                { lightness: -6 },
+                { visibility: 'on' }
+            ]
+        },{
+            featureType: 'road.local',
+            elementType: 'all',
+            stylers: [
+                { hue: '#D8D8D8' },
+                { saturation: -100 },
+                { lightness: -15 },
+                { visibility: 'on' }
+            ]
+        },{
+            featureType: 'road.highway',
+            elementType: 'all',
+            stylers: [
+                { hue: '#7A2729' },
+                { saturation: 100 },
+                { lightness: -60 },
+                { visibility: 'on' }
+            ]
+        }
+    ];
+    
+    var currentInfoWindow = null; 
+    
+    var options = {
+        mapTypeControlOptions: {
+            mapTypeIds: ['Styled']
+        },
+        center: new google.maps.LatLng(19.048105, -98.210454),
+        zoom: 7,
+        panControl: true,
+        zoomControl: true,
+        scaleControl: true,
+        disableDefaultUI: true, 
+        mapTypeId: 'Styled'
+    };
+    
+    
+    var div = document.getElementById('layoutmap');
+    var map = new google.maps.Map(div, options);
+    var styledMapType = new google.maps.StyledMapType(styles, { name: 'Styled' });
+    map.mapTypes.set('Styled', styledMapType);
+
+    ///////////
+    //MAP Object LIST Iteration
+    //////////
+      
+      {% if object_list %}
+        {% for vehicle in object_list %}
+            {% if vehicle.current_location == 'city_a' %}
+            var lat = 19.434623;
+            var lon = -99.127623;
+            {% elif vehicle.current_location == 'city_b' %}
+            var lat = 19.042412;
+            var lon = -98.210310;
+            {% elif vehicle.current_location == 'city_c' %}
+            var lat = 19.284326; 
+            var lon = -99.661188;
+            {% endif %}
+            
+            var icon_colegio{{ vehicle.pk }}= '{% static 'img/mark.png' %}';
+            var myLatlng{{ vehicle.pk }}= new google.maps.LatLng(lat, lon);
+            var marker{{ vehicle.pk }} = new google.maps.Marker({position: myLatlng{{ vehicle.pk }},map: map, icon: icon_colegio{{ vehicle.pk }}});
+            var contentString{{ vehicle.pk }} = '<div id=content1>'+'<div id=siteNotice>'+'</div>'+'<h5 id=firstHeading class=firstHeading>{{vehicle.current_location}}</h5>'+'<div id=bodyContent>'+'<p><b>Total Fuel Efficency: {{vehicle.fuel_total_efficency}}</b> </p>'+'<p><b><a href="/detail_vehicle/{{ vehicle.pk}}/"> Ver Más</a></b></p>'+'</div>'+'</div>';
+            var infowindow{{ vehicle.pk }} = new google.maps.InfoWindow({content: contentString{{ vehicle.pk }}});
+            google.maps.event.addListener(marker{{ vehicle.pk }}, 'click', function() { if (currentInfoWindow != null) {currentInfoWindow.close();} infowindow{{ vehicle.pk }}.open(map,marker{{ vehicle.pk }}); currentInfoWindow = infowindow{{ vehicle.pk }};});
+    
+        {% endfor %}
+    
+    {% endif %}
+
+    }
+        
+    </script>
+
+     <style>
+      #layoutmap{
+        width: auto;
+        height: 600px;
+    }
+    </style>
 
 {% endblock %}

@@ -58,27 +58,25 @@
              </tbody>
           </table>
 
- {% if is_paginated %}
+
      <div class="paginationbox">
          <ul class="pagination">
-             {% if page_obj.has_previous %}
+             {% if history.has_previous %}
                  <li>
-                     <span><a href="?page={{ page_obj.previous_page_number }}">Anterior</a></span>
+                     <span><a href="?page={{ history.previous_page_number }}">Anterior</a></span>
                  </li>
              {% endif %}
              <li class="">
-                 <span>Pagina {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.</span>
+                 <span>Pagina {{ history.number }} de {{ history.paginator.num_pages }}.</span>
              </li>
-             {% if page_obj.has_next %}
+             {% if history.has_next %}
                  <li>
-                     <span><a href="?page={{ page_obj.next_page_number }}">Siguiente</a></span>
+                     <span><a href="?page={{ history.next_page_number }}">Siguiente</a></span>
                  </li>
              {% endif %}
          </ul>
      </div>
- {% else %}
 
- {% endif %}
 
         </div>
     </div>
