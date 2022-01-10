@@ -18,7 +18,7 @@ class Vehicle(models.Model):
         Get Vechicle Travel History
         :return: <QuerySet [<VehicleHistory: 1>, <VehicleHistory: 2>]>
         """
-        history_travel = self.vehiclehistory_set.all()
+        history_travel = self.vehiclehistory_set.all().order_by('-add_date')
         return history_travel
 
     @property
@@ -32,7 +32,7 @@ class Vehicle(models.Model):
         if history_travel.count() > 0:
             return history_travel[0].get_current_location_display()
         else:
-            return ''
+            return 'no_travel_yet'
 
     @property
     def last_trip_distance(self):

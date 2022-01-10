@@ -49,7 +49,7 @@ class TestVehicle:
             'Check if current location match with latest history created'
 
         current_location = empty_vehicle.current_location
-        assert current_location == '', \
+        assert current_location == 'no_travel_yet', \
             'Check if current location is blank if vehicle does not have trips'
 
     def test_last_trip_distance(self, vehicle: Vehicle,

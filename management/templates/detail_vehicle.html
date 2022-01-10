@@ -1,0 +1,89 @@
+{% extends "base_user.html" %}
+ {% load static %}
+{% block head_content %}
+<title>Dashboard</title>
+{% endblock%}
+
+{% block container %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+    <h1 class="h2">Detail Vehicle: {{vehicle.vehicle_id}}</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+      
+    </div>
+  </div>
+
+<div class="row">
+
+<div class="col-lg-12">
+
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item"><b>Current Location:</b>  {{vehicle.current_location}}</li>
+        <li class="list-group-item"><b>Last Trip Distance:</b>  {{vehicle.last_trip_distance}}</li>
+        <li class="list-group-item"><b>Total Distance: </b>{{vehicle.total_distance}}</li>
+        <li class="list-group-item"><b>Last Trip Fuel Efficency: </b>{{vehicle.fuel_efficency}}</li>
+        <li class="list-group-item"><b>Total Fuel Efficency:</b> {{vehicle.fuel_total_efficency}}</li>
+      </ul>
+
+
+
+  <div class="card">
+    <div class="card-header">Travel History</div>
+    <div class="card-body">
+       <div class="table-responsive bootgrid">
+          {% if history %}
+          <table class="table table-striped" id="bootgrid-basic">
+             <thead>
+                <tr>
+                   <th data-column-id="sender">Current Location</th>
+                   <th data-column-id="received" data-order="desc"> Distance</th>
+                   <th data-column-id="received" data-order="desc">Fuel Consumed</th>
+                   <th data-column-id="received" data-order="desc">Date</th>
+                </tr>
+             </thead>
+             <tbody>
+
+                {% for trip in history %}
+                   <tr>
+                   <td>{{ trip.current_location }}</td>
+                   <td>{{ trip.distance_traveled }}</td>
+                   <td>{{ trip.fuel_consumed }}</td>
+                   <td>{{ trip.add_date }}</td>
+                </tr>
+              {% endfor %}
+
+          {% else %}
+              <h3>No Trips</h3>
+          {% endif %}
+
+             </tbody>
+          </table>
+
+ {% if is_paginated %}
+     <div class="paginationbox">
+         <ul class="pagination">
+             {% if page_obj.has_previous %}
+                 <li>
+                     <span><a href="?page={{ page_obj.previous_page_number }}">Anterior</a></span>
+                 </li>
+             {% endif %}
+             <li class="">
+                 <span>Pagina {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.</span>
+             </li>
+             {% if page_obj.has_next %}
+                 <li>
+                     <span><a href="?page={{ page_obj.next_page_number }}">Siguiente</a></span>
+                 </li>
+             {% endif %}
+         </ul>
+     </div>
+ {% else %}
+
+ {% endif %}
+
+        </div>
+    </div>
+    </div>
+</div>
+</div>
+
+{% endblock %}
