@@ -122,3 +122,36 @@ class TestVehicleEndpoints:
         response = api_client.delete(url)
         assert response.status_code == 204
         assert Vehicle.objects.all().count() == 0
+
+
+class TestInstructionEndpoint:
+    """
+    Test send_instruction endpoint, PUT request to
+    /api/send_instruction/vehicle_pk, send travel location
+    inside body request 'current_location': city_x
+    """
+
+    # get URL for endpoint based on url name
+    endpoint = '/api/send_instruction'
+
+    def test_create(self, api_client, empty_vehicle: Vehicle):
+        """
+        Test send instruction to vehicle endpoint,
+        """
+        location = 'city_a'
+        test_json = {
+            'current_location': location,
+        }
+
+        url = f'{self.endpoint}/{empty_vehicle.id}'
+        print('url: ', url)
+
+        response = api_client.put(
+            url,
+            test_json,
+            format='json'
+        )
+
+        json_obj = json.loads(response.content)
+        assert response.status_code == 201
+        assert json_obj['current_location'] == test_json['current_location']

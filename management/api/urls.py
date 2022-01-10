@@ -1,5 +1,5 @@
 from django.urls import include, path
-from management.api.views import VehicleViewSet
+from management.api.views import VehicleViewSet, send_instruction
 from rest_framework.authtoken.views import obtain_auth_token
 
 
@@ -21,5 +21,8 @@ urlpatterns = [
         'put': 'update',
         'delete': 'destroy'
     }), name='vehicle_url_id'),
+
+    path('send_instruction/<int:pk>', send_instruction,
+         name='instruction_url'),
 
     ]

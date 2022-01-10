@@ -96,23 +96,51 @@ class VehicleHistory(models.Model):
     vehicle = models.ForeignKey(Vehicle,
                                 verbose_name='Vehicle',
                                 on_delete=models.CASCADE)
-    city_a = 0
-    city_b = 1
-    city_c = 2
-    location_options = ((city_a, 'city_a'),
-                        (city_b, 'city_b'),
-                        (city_c, 'city_c'),)
-    current_location = models.IntegerField(choices=location_options,
-                                           default=city_a,
-                                           verbose_name='Current location')
+    location_options = (('city_a', 'city_a'),
+                        ('city_b', 'city_b'),
+                        ('city_c', 'city_c'),)
+    current_location = models.CharField(max_length=20,
+                                        choices=location_options,
+                                        default='city_a',
+                                        verbose_name='Current location')
     distance_traveled = models.DecimalField(verbose_name='Travel Distance KM',
-                                            decimal_places=2, max_digits=6,
+                                            decimal_places=4, max_digits=6,
                                             default=0)
     fuel_consumed = models.DecimalField(verbose_name='Fuel Consumed LT',
-                                        decimal_places=2, max_digits=6,
+                                        decimal_places=4, max_digits=6,
                                         default=0)
     add_date = models.DateTimeField(verbose_name='Creation Date',
                                     auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        """
+        Override save method to calculate distance based on provided data
+        fuel effiency to calculate fuel consumed is a constant
+        """
+
+        # asign distance from cities:
+        distances = {
+            'city_a': {'city_a': 0, 'city_b': 1, 'city_c': 2},
+            'city_b': {'city_a': 1, 'city_b': 0, 'city_c': 4},
+            'city_c': {'city_a': 2, 'city_b': 4, 'city_c': 0},
+            }
+
+        # fuel effiency km/l
+        fuel_effiency = 10
+
+        objects = VehicleHistory.objects.filter(vehicle=self.vehicle).count()
+        if objects == 0:
+            self.distance_traveled = 0
+            self.fuel_consumed = 0
+        else:
+            # get previous location
+            origin = self.vehicle.get_current_location()
+            destine = self.current_location
+            distance = distances[origin][destine]
+            self.distance_traveled = distance
+            self.fuel_consumed = distance/fuel_effiency
+
+        super(VehicleHistory, self).save(*args, **kwargs)
 
     def __str__(self):
         return str(self.pk)

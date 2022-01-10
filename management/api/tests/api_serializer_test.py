@@ -1,7 +1,8 @@
 import pytest
 from mixer.backend.django import mixer
 from management.models import Vehicle
-from management.api.serializers import VehicleSerializer
+from management.api.serializers import VehicleSerializer, \
+     VehicleHistorySerializer
 
 pytestmark = pytest.mark.django_db
 
@@ -31,6 +32,22 @@ class TestVehicleSerializer:
         }
 
         serializer = VehicleSerializer(data=test_json)
+
+        assert serializer.is_valid()
+        assert serializer.errors == {}
+
+
+class TestVehicleHistorySerializer:
+    def test_deserializer(self):
+        """
+        Test to check deserialization works properly
+        """
+        location = 'city_a'
+        test_json = {
+            'current_location': location,
+        }
+
+        serializer = VehicleHistorySerializer(data=test_json)
 
         assert serializer.is_valid()
         assert serializer.errors == {}

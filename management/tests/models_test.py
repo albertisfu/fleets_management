@@ -7,19 +7,13 @@ pytestmark = pytest.mark.django_db
 
 @pytest.fixture
 def vehicle(db) -> Vehicle:
-    city_a = 0
-    city_b = 1
-    city_c = 2
     vehicle = mixer.blend(Vehicle)
     mixer.blend(VehicleHistory, vehicle=vehicle,
-                current_location=city_a,
-                distance_traveled=0, fuel_consumed=0)
+                current_location='city_a')
     mixer.blend(VehicleHistory, vehicle=vehicle,
-                current_location=city_b,
-                distance_traveled=20, fuel_consumed=2.5)
+                current_location='city_b')
     mixer.blend(VehicleHistory, vehicle=vehicle,
-                current_location=city_c,
-                distance_traveled=30, fuel_consumed=2)
+                current_location='city_c')
     return vehicle
 
 
@@ -65,7 +59,7 @@ class TestVehicle:
         distance of a vehicle
         """
         last_distance = vehicle.get_last_trip_distance()
-        assert last_distance == 30, \
+        assert last_distance == 4, \
             'Check if last distance match with last trip'
 
         last_distance = empty_vehicle.get_last_trip_distance()
@@ -80,7 +74,7 @@ class TestVehicle:
         """
 
         total_distance = vehicle.get_total_distance()
-        assert total_distance == 50, \
+        assert total_distance == 5, \
             'Check if total distance match'
 
         total_distance = empty_vehicle.get_total_distance()
@@ -93,7 +87,7 @@ class TestVehicle:
         Test get_fuel_efficency it has to return trip fuel effiency km/lt
         """
         fuel_efficency = vehicle.get_fuel_efficency()
-        assert fuel_efficency == 15, \
+        assert fuel_efficency == 10, \
             'Check if fuel effiency match'
 
         fuel_efficency = empty_vehicle.get_fuel_efficency()
@@ -106,7 +100,7 @@ class TestVehicle:
         Test get_fuel_efficency it has to return total fuel effiency km/lt
         """
         fuel_efficency = vehicle.get_fuel_total_efficency()
-        assert float(fuel_efficency) == 11.11, \
+        assert float(fuel_efficency) == 10, \
             'Check if fuel effiency match'
 
         fuel_efficency = empty_vehicle.get_fuel_total_efficency()
@@ -120,14 +114,12 @@ class TestVehicleHistory:
         Test to check if a vehicle history instance is properly created.
         """
         vehicle = mixer.blend(Vehicle)
-        city_a = 1
         history_vehicle = mixer.blend(VehicleHistory, vehicle=vehicle,
-                                      current_location=city_a,
-                                      distance_traveled=2, fuel_consumed=10)
+                                      current_location='city_a')
 
         assert history_vehicle.vehicle.pk == 1, 'Check Vehicle relation'
 
-        assert history_vehicle.current_location == 1 \
-            and history_vehicle.distance_traveled == 2 \
-            and history_vehicle.fuel_consumed == 10, \
+        assert history_vehicle.current_location == 'city_a' \
+            and history_vehicle.distance_traveled == 0 \
+            and history_vehicle.fuel_consumed == 0, \
             'Check History Vehicle Instance'
