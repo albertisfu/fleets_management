@@ -24,6 +24,8 @@ COPY requirements.txt /webapp/requirements.txt
 
 # actually install the requirements into the virtual environment
 
+RUN pip install -r requirements.txt
+
 COPY . /webapp
 
 # run django as development server
