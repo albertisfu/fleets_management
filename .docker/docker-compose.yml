@@ -24,6 +24,7 @@ services:
         volumes:
             - ../:/webapp/
         
+        command: sh -c "sleep 10"
         depends_on:
             - db
         
