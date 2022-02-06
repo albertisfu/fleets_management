@@ -5,6 +5,7 @@ services:
 
     db:
         image: mariadb:10.5.8
+        restart: on-failure
         volumes: 
             - ./mariadb/charset.cnf:/etc/mysql/conf.d/charset.cnf
             - /tmp:/var/lib
